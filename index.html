@@ -99,7 +99,7 @@
                     // 寫入成功後，2 秒後直接幫使用者「自動關閉 LIFF 視窗」返回聊天室，體驗極佳！
                     setTimeout(() => {
                         liff.closeWindow();
-                    }, 2000);
+                    }, 4000);
                 } else {
                     alert("錯誤: " + data.message);
                     submitBtn.disabled = false;
