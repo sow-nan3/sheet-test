@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>資料輸入表單</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">用戶資料登記</h2>
+        
+        <form id="dataForm" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">姓名</label>
+                <input type="text" id="name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">地址</label>
+                <input type="text" id="address" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <button type="submit" id="submitBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                送出資料
+            </button>
+        </form>
+
+        <div id="successMsg" class="hidden mt-4 p-4 bg-green-100 text-green-700 rounded-md text-center">
+            填寫成功！3秒後自動跳轉到資料查看頁面...
+        </div>
+    </div>
+
+    <script>
+        // ⚠️ 請替換成你剛剛複製的 GAS 網址
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzbdOG84fNcpfaY2XWu0k9AGwG69dRDPt4jayBd3_2AgmMviDysOvBLS7S8XmHy49CJ9A/exec";
+
+        document.getElementById('dataForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // 防止表單傳統重新整理
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const successMsg = document.getElementById('successMsg');
+            
+            // 按鈕變成防重複點擊狀態
+            submitBtn.disabled = true;
+            submitBtn.innerText = "資料傳送中...";
+
+            const payload = {
+                name: document.getElementById('name').value,
+                address: document.getElementById('address').value
+            };
+
+            // 利用 fetch 發送 POST 請求給 GAS
+            fetch(GAS_URL, {
+                method: "POST",
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === "success") {
+                    successMsg.classList.remove('hidden');
+                    document.getElementById('dataForm').reset();
+                    
+                    // 3 秒後自動導向到資料讀取頁面 view.html
+                    setTimeout(() => {
+                        window.location.href = "view.html";
+                    }, 3000);
+                } else {
+                    alert("伺服器錯誤: " + data.message);
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "重新送出";
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("連線發生錯誤，請稍後再試。");
+                submitBtn.disabled = false;
+                submitBtn.innerText = "重新送出";
+            });
+        });
+    </script>
+</body>
+</html>
