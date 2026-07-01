@@ -105,9 +105,12 @@
                     submitBtn.innerText = "重新送出";
                 }
             })
-            .catch(error => {
-                alert("連線失敗");
-                submitBtn.disabled = false;
+            } catch (error) {
+                console.error("LIFF 初始化失敗", error);
+                // 把原本的「無法正常執行」改成直接顯示 error 訊息，這樣一眼就能看出是 ID 錯了還是權限沒開
+                alert("錯誤詳細訊息: " + error.message || error);
+                document.getElementById('welcomeMsg').innerText = "無法讀取 LINE 身分。";
+                }
             });
         });
     </script>
